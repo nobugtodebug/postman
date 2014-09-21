@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 	"text/template"
-
+	"time"
 	"github.com/jordan-wright/email"
 	"github.com/zachlatta/postman/mail"
 )
@@ -23,6 +23,8 @@ var (
 	files                                     []string
 	debug                                     bool
 	workerCount                               int
+	freqPerMinute							  int
+	freqMinutes								  int
 )
 
 var flags, requiredFlags []*flag.Flag
@@ -40,6 +42,8 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "print emails to stdout instead of sending")
 	flag.StringVar(&attach, "attach", "", "attach a list of comma separated files")
 	flag.IntVar(&workerCount, "c", 8, "number of concurrent requests to have")
+	flag.IntVar(&freqPerMinute, "freq", 12, "number of requests in x minutes")
+	flag.IntVar(&freqMinutes, "fmin", 1, "number of requests in x minutes, x value")
 
 	requiredFlagNames := []string{"text", "csv", "server", "port", "user",
 		"password", "sender", "subject"}
@@ -64,6 +68,11 @@ func main() {
 	}
 
 	checkAndHandleMissingFlags(requiredFlags)
+
+	var throttle <-chan time.Time
+	if freqPerMinute > 0 {
+		throttle = time.Tick(time.Duration((freqMinutes * 60 * 1e6)/freqPerMinute) * time.Microsecond)
+	}
 
 	csv, err := os.Open(csvPath)
 	if err != nil {
@@ -92,6 +101,9 @@ func main() {
 	// Start workers
 	for i := 0; i < workerCount; i++ {
 		go func() {
+			if freqPerMinute > 0 {
+				<-throttle
+			}
 			for recipient := range jobs {
 				sendMail(recipient, *emailField, &mailer, debug, success, fail)
 			}

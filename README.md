@@ -1,3 +1,13 @@
+# 邮件群发
+
+这是一个很好的邮件群发的程序，除了模板替换，我想我还需要加上频率控制，我不想刚发几封邮件就被block，特别是在国内的邮件运营条件下。
+
+增加的功能包括:
+
+* 频率控制
+
+
+
 # Postman ![Analytics](https://ga-beacon.appspot.com/UA-34529482-6/postman/readme?pixel) [![Hack zachlatta/postman on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-s-v1-7475db0cf93fe5d1e29420c928ebc614.png)](https://www.nitrous.io/hack_button?source=embed&runtime=go&repo=zachlatta%2Fpostman&file_to_open=main.go)
 
 <img src="http://gh.landersbenjamin.com/everything-sloths/svg/mail.svg" width="130" alt="Postman Icon" align="right">
