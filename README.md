@@ -18,18 +18,31 @@ Usage:
 Flags:
 
   -attach      attach a list of comma separated files
+
   -c           number of concurrent requests to have
+
   -csv         path to csv of contact list
+
   -debug       print emails to stdout instead of sending
+
   -fmin        number of requests in x minutes, x value 【频率时间间隔】
+
   -freq        number of requests in x minutes 【频率时间间隔内请求次数】
+
   -html        html template path
+
   -password    smtp password
+
   -port        port of smtp server
+
   -sender      email to send from
+
   -server      url of smtp server
+
   -subject     subject of email
+
   -text        text template path
+  
   -user        smtp username
 
 
