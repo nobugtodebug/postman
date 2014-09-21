@@ -34,6 +34,15 @@ Flags:
   -user        smtp username
 ````
 
+## 安装
+
+````
+$ go get github.com/liujianping/postman
+$ cd $GOHOME/src/github.com/liujianping 
+$ go install
+$ $GOHOME/bin/postman
+````
+
 # Postman ![Analytics](https://ga-beacon.appspot.com/UA-34529482-6/postman/readme?pixel) [![Hack zachlatta/postman on Nitrous.IO](https://d3o0mnbgv6k92a.cloudfront.net/assets/hack-s-v1-7475db0cf93fe5d1e29420c928ebc614.png)](https://www.nitrous.io/hack_button?source=embed&runtime=go&repo=zachlatta%2Fpostman&file_to_open=main.go)
 
 <img src="http://gh.landersbenjamin.com/everything-sloths/svg/mail.svg" width="130" alt="Postman Icon" align="right">
