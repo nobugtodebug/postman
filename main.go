@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"io"
 	"os"
 	"strings"
@@ -120,17 +121,18 @@ func main() {
 		select {
 		case msg := <-success:
 			if !debug {
-				fmt.Printf("\rEmailed recipient %d of %d...", i+1, len(*recipients))
+				log.Printf("\rEmailed recipient %d of %d...", i+1, len(*recipients))
 			} else {
 				bytes, err := msg.Bytes()
 				if err != nil {
-					fmt.Printf("Error parsing email: %v", err)
+					log.Printf("Error parsing email: %v", err)
 				}
-				fmt.Printf("%s\n\n\n", string(bytes))
+				log.Printf("%s\n\n\n", string(bytes))
 			}
+			log.Println("sending recipient success", msg.To)
 		case err := <-fail:
-			fmt.Fprintln(os.Stderr, "\nError sending email:", err.Error())
-			os.Exit(2)
+			log.Println("\nError sending email:", err.Error())
+			continue
 		}
 	}
 	fmt.Println()
