@@ -1,31 +1,39 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"io"
+	"log"
 	"os"
 	"strings"
 	"text/template"
 	"time"
+
 	"github.com/jordan-wright/email"
 	"github.com/zachlatta/postman/mail"
 )
 
 type Recipient map[string]string
 
+type RandTempDesc struct {
+	Name  string
+	Items []string
+}
+
 var (
 	htmlTemplatePath, textTemplatePath        string
 	csvPath                                   string
+	randTemp                                  string
 	smtpURL, smtpUser, smtpPassword, smtpPort string
 	sender, subject                           string
 	attach                                    string
 	files                                     []string
 	debug                                     bool
 	workerCount                               int
-	freqPerMinute							  int
-	freqMinutes								  int
+	freqPerMinute                             int
+	freqMinutes                               int
 )
 
 var flags, requiredFlags []*flag.Flag
@@ -34,6 +42,7 @@ func main() {
 	flag.StringVar(&htmlTemplatePath, "html", "", "html template path")
 	flag.StringVar(&textTemplatePath, "text", "", "text template path")
 	flag.StringVar(&csvPath, "csv", "", "path to csv of contact list")
+	flag.StringVar(&randTemp, "rand", "", "path to json file that descripte which column should pick item from list randomly")
 	flag.StringVar(&smtpURL, "server", "", "url of smtp server")
 	flag.StringVar(&smtpPort, "port", "", "port of smtp server")
 	flag.StringVar(&smtpUser, "user", "", "smtp username")
@@ -72,7 +81,7 @@ func main() {
 
 	var throttle <-chan time.Time
 	if freqPerMinute > 0 {
-		throttle = time.Tick(time.Duration((freqMinutes * 60 * 1e6)/freqPerMinute) * time.Microsecond)
+		throttle = time.Tick(time.Duration((freqMinutes*60*1e6)/freqPerMinute) * time.Microsecond)
 	}
 
 	csv, err := os.Open(csvPath)
@@ -82,7 +91,22 @@ func main() {
 	}
 	defer csv.Close()
 
-	recipients, emailField, err := readCSV(csvPath)
+	jsonFile, err := os.Open(randTemp)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error opening randTemp:", err.Error())
+		os.Exit(2)
+	}
+	defer jsonFile.Close()
+
+	var randDesc []RandTempDesc
+	dec := json.NewDecoder(jsonFile)
+	err = dec.Decode(&randDesc)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Decode json failed", err.Error())
+		os.Exit(2)
+	}
+
+	recipients, emailField, err := readCSV(csvPath, randDesc)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error reading CSV:", err.Error())
 		os.Exit(2)

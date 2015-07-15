@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"errors"
 	"io"
+	"math/rand"
 	"os"
 	"strings"
 )
@@ -12,7 +13,7 @@ var (
 	missingEmailField = errors.New("Email field missing in header.")
 )
 
-func readCSV(path string) (*[]Recipient, *string, error) {
+func readCSV(path string, randDesc []RandTempDesc) (*[]Recipient, *string, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, nil, err
@@ -40,6 +41,12 @@ func readCSV(path string) (*[]Recipient, *string, error) {
 
 			for i, key := range header {
 				recipient[key] = fields[i]
+				for _, randColum := range randDesc {
+					if strings.ToLower(key) == strings.ToLower(randColum.Name) {
+						recipient[key] = randColum.Items[rand.Intn(len(randColum.Items))]
+					}
+					break
+				}
 			}
 
 			recipients = append(recipients, recipient)
