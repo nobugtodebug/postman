@@ -5,6 +5,7 @@
 增加的功能包括:
 
 * 频率控制
+* 可以指定模板中哪些字段的值在一个列表中随机选取
 
 ## 使用说明
 
@@ -21,6 +22,7 @@ Flags:
   -attach      attach a list of comma separated files
   -c           number of concurrent requests to have
   -csv         path to csv of contact list
+  -rand        path to json file that descripte which column should pick item from list randomly
   -debug       print emails to stdout instead of sending
   -fmin        number of requests in x minutes, x value 【频率时间间隔】
   -freq        number of requests in x minutes 【频率时间间隔内请求次数】
@@ -33,6 +35,20 @@ Flags:
   -text        text template path
   -user        smtp username
 ````
+
+-rand 选项对应的 json 格式如下：
+```
+[
+    {
+        "Name":"Career",
+        "Items":["程序员","工程师","学生","设计师","建筑师","电子工程师","分析师"," DBA"]
+    }
+]
+```
+- Name 提定 csv 文件中那个列是要随机替换的
+- Items 是可待随机替换内容的列表
+
+可以在 json 是指定多个 csv 的文件的列进行替换。被指定要替换的列在 CSV 文件中的内容会被忽略。
 
 ## 安装
 
