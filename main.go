@@ -91,19 +91,21 @@ func main() {
 	}
 	defer csv.Close()
 
-	jsonFile, err := os.Open(randTemp)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error opening randTemp:", err.Error())
-		os.Exit(2)
-	}
-	defer jsonFile.Close()
-
 	var randDesc []RandTempDesc
-	dec := json.NewDecoder(jsonFile)
-	err = dec.Decode(&randDesc)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Decode json failed", err.Error())
-		os.Exit(2)
+	if len(randTemp) > 0 {
+		jsonFile, err := os.Open(randTemp)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error opening randTemp:", err.Error())
+			os.Exit(2)
+		}
+		defer jsonFile.Close()
+
+		dec := json.NewDecoder(jsonFile)
+		err = dec.Decode(&randDesc)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Decode json failed", err.Error())
+			os.Exit(2)
+		}
 	}
 
 	recipients, emailField, err := readCSV(csvPath, randDesc)
